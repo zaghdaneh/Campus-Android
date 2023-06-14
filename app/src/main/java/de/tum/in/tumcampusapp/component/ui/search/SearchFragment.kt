@@ -68,6 +68,7 @@ class SearchFragment : BaseFragment<Unit>(
 
     private val binding by viewBinding(FragmentSearchBinding::bind)
 
+    private var initializedView : Boolean = false //this is used to prevent #1587 where the keyboard will appear when back is pressed and drawer bugs out.
     override fun onAttach(context: Context) {
         super.onAttach(context)
         injector.searchComponent().inject(this)
@@ -80,11 +81,13 @@ class SearchFragment : BaseFragment<Unit>(
                 handleBackFromPersonDetailsByRoomClick(result)
             }
         }
+        initializedView = false
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        if (initializedView) return
         initSearchResultsAdapter()
         initSearchResultTypesAdapter()
         initRecentSearchesAdapter()
@@ -107,6 +110,8 @@ class SearchFragment : BaseFragment<Unit>(
         binding.toolbarSearch.clearButton.setOnClickListener {
             clearInput()
         }
+
+        initializedView = true
     }
 
     private fun initRecentSearchesAdapter() {
